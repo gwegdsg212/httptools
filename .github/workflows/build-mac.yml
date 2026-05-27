@@ -23,11 +23,12 @@ jobs:
           set -x
           python -m pip install --upgrade pip
           python -m pip install pyinstaller
-          # 把 Pillow 的 universal2(双架构) 版本装到 u2libs：依次尝试多个兼容标签，命中即停
+          # 新版 Pillow(11+) 不再发 universal2 wheel，只发分架构的；
+          # 故限定 <11，并按版本依次尝试带 universal2 wheel 的版本，命中即停。
           ok=0
-          for plat in macosx_11_0_universal2 macosx_10_13_universal2 macosx_12_0_universal2 macosx_10_15_universal2; do
-            if python -m pip install --only-binary=:all: --platform "$plat" --target u2libs pillow; then
-              ok=1; break
+          for ver in 10.4.0 10.3.0 10.2.0 9.5.0; do
+            if python -m pip install --only-binary=:all: --platform macosx_11_0_universal2 --target u2libs "pillow==$ver"; then
+              ok=1; echo "已安装 universal2 Pillow $ver"; break
             fi
           done
           if [ "$ok" != "1" ]; then
