@@ -1,12 +1,9 @@
 name: 打包 Mac 版
 
-# 手动触发，或推送 tools 目录代码时自动触发
+# 手动触发，或推送代码时自动触发
 on:
   workflow_dispatch:
   push:
-    paths:
-      - 'tools/**'
-      - '.github/workflows/build-mac.yml'
 
 jobs:
   build-macos:
