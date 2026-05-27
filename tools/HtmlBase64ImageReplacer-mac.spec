@@ -4,7 +4,7 @@
 
 a = Analysis(
     ['html_base64_image_replacer.py'],
-    pathex=['u2libs'],
+    pathex=[],
     binaries=[],
     datas=[],
     hiddenimports=['PIL._tkinter_finder', 'PIL.Image', 'PIL.ImageTk'],
@@ -30,7 +30,7 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch='universal2', # 通用二进制：Intel 与 Apple 芯片 Mac 均可原生运行
+    target_arch=None,         # 跟随打包机架构：Intel 机出 Intel 包；Apple 机出 arm64 包
     codesign_identity=None,
     entitlements_file=None,
 )

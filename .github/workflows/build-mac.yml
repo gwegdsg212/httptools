@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-latest   # Apple 芯片云主机（排队快）；配合 universal2 + 通用版 pillow，Intel/Apple 均可运行
+    runs-on: macos-13   # Intel(x86_64) 云主机：pillow 原生安装可用，产物 Intel 直接跑 / Apple 芯片经 Rosetta 运行
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -20,23 +20,9 @@ jobs:
       - name: 安装依赖
         working-directory: tools
         run: |
-          set -x
           python -m pip install --upgrade pip
-          python -m pip install pyinstaller
-          # 新版 Pillow(11+) 不再发 universal2 wheel，只发分架构的；
-          # 故限定 <11，并按版本依次尝试带 universal2 wheel 的版本，命中即停。
-          ok=0
-          for ver in 10.4.0 10.3.0 10.2.0 9.5.0; do
-            if python -m pip install --only-binary=:all: --platform macosx_11_0_universal2 --target u2libs "pillow==$ver"; then
-              ok=1; echo "已安装 universal2 Pillow $ver"; break
-            fi
-          done
-          if [ "$ok" != "1" ]; then
-            echo "::error::未能安装 universal2 版 Pillow"; exit 1
-          fi
-          # 验证 PIL 确实就位（universal2 含 arm64 切片，可在本机导入）
-          python -c "import sys; sys.path.insert(0,'u2libs'); import PIL, PIL.Image, PIL.ImageTk; print('Pillow OK', PIL.__version__)"
-          ls -la u2libs
+          python -m pip install pyinstaller pillow
+          python -c "import PIL, PIL.Image, PIL.ImageTk; print('Pillow OK', PIL.__version__)"
 
       - name: 打包 .app
         working-directory: tools
