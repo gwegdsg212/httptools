@@ -22,6 +22,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install pyinstaller
+          # 强制安装 Pillow 的 universal2 (双架构) 版本到 u2libs，供通用包打包使用
+          python -m pip install --only-binary=:all: \
+            --platform macosx_15_0_universal2 \
+            --target u2libs \
+            pillow
 
       - name: 打包 .app
         working-directory: tools

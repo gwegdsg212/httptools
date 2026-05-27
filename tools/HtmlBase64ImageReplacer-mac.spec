@@ -4,14 +4,14 @@
 
 a = Analysis(
     ['html_base64_image_replacer.py'],
-    pathex=[],
+    pathex=['u2libs'],
     binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=['PIL._tkinter_finder', 'PIL.Image', 'PIL.ImageTk'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['windnd', 'PIL'],
+    excludes=['windnd'],
     noarchive=False,
     optimize=0,
 )
