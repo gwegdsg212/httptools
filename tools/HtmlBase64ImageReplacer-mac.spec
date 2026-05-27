@@ -7,11 +7,11 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['PIL._tkinter_finder', 'PIL.Image', 'PIL.ImageTk'],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['windnd'],
+    excludes=['windnd', 'PIL'],
     noarchive=False,
     optimize=0,
 )
@@ -30,7 +30,7 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,          # 设为 'universal2' 可生成通用二进制（需通用版 Python）
+    target_arch='universal2', # 通用二进制：Intel 与 Apple 芯片 Mac 均可原生运行
     codesign_identity=None,
     entitlements_file=None,
 )

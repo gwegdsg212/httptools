@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-13   # Intel(x86_64) 云主机：产物 Intel Mac 原生可跑，Apple 芯片可经 Rosetta 兼容运行
+    runs-on: macos-latest   # Apple 芯片云主机（排队快），配合 universal2 产出 Intel+Apple 通用包
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
         working-directory: tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyinstaller pillow
+          python -m pip install pyinstaller
 
       - name: 打包 .app
         working-directory: tools
