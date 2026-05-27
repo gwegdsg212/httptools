@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-13   # Intel(x86_64) 云主机：pillow 原生安装可用，产物 Intel 直接跑 / Apple 芯片经 Rosetta 运行
+    runs-on: macos-latest   # Apple 芯片云主机（排队快）；用 delocate 合成 universal2 pillow，产 Intel/Apple 通用包
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -17,12 +17,27 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: 安装依赖
+      - name: 安装依赖（合成 universal2 版 Pillow）
         working-directory: tools
         run: |
+          set -ex
           python -m pip install --upgrade pip
-          python -m pip install pyinstaller pillow
-          python -c "import PIL, PIL.Image, PIL.ImageTk; print('Pillow OK', PIL.__version__)"
+          python -m pip install pyinstaller delocate
+          # Pillow 官方不发 universal2 wheel，这里分别下载 arm64 与 x86_64 两个 wheel 再合并
+          mkdir -p wheels fused
+          python -m pip download --only-binary=:all: --no-deps \
+            --python-version 3.11 --implementation cp --abi cp311 \
+            --platform macosx_11_0_arm64 -d wheels pillow
+          python -m pip download --only-binary=:all: --no-deps \
+            --python-version 3.11 --implementation cp --abi cp311 \
+            --platform macosx_10_10_x86_64 -d wheels pillow
+          ARM=$(ls wheels/*arm64*.whl)
+          X86=$(ls wheels/*x86_64*.whl)
+          delocate-merge "$ARM" "$X86" -w fused
+          ls -la fused
+          # 安装合成后的 universal2 wheel 到 u2libs，供打包使用
+          python -m pip install --target u2libs fused/*universal2*.whl
+          python -c "import sys; sys.path.insert(0,'u2libs'); import PIL, PIL.Image, PIL.ImageTk; print('Pillow universal2 OK', PIL.__version__)"
 
       - name: 打包 .app
         working-directory: tools
