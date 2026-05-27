@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-13   # Intel(x86_64) 云主机：产物 Intel Mac 原生可跑，Apple 芯片可经 Rosetta 兼容运行
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
