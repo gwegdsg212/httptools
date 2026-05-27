@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-latest   # Apple 芯片云主机（排队快），配合 universal2 产出 Intel+Apple 通用包
+    runs-on: macos-13   # Intel(x86_64) 云主机：pillow 普通安装即可，产物 Intel 原生 / Apple 芯片经 Rosetta 运行
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -17,28 +17,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: 安装 PyInstaller
+      - name: 安装依赖
         working-directory: tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyinstaller
-
-      - name: 安装 Pillow(universal2，失败不阻断)
-        working-directory: tools
-        continue-on-error: true
-        run: |
-          # 强制把 Pillow 的 universal2(双架构) 版本装到 u2libs，供通用包打包使用。
-          # 装不上也不影响出包，只是没有缩略图预览。
-          set -x
-          python -m pip install --only-binary=:all: \
-            --platform macosx_13_0_universal2 \
-            --target u2libs \
-            pillow \
-          || python -m pip install --only-binary=:all: \
-            --platform macosx_10_13_universal2 \
-            --target u2libs \
-            pillow
-          ls -la u2libs || true
+          python -m pip install pyinstaller pillow
 
       - name: 打包 .app
         working-directory: tools
